@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Sequelize } = require('sequelize');
 const User = require('./models/user');
-const Login = require('./models/login');
 
 const app = express();
 const sequelize = new Sequelize(require('./config/config.json').development);
@@ -25,6 +24,7 @@ app.post('/ent', async (req, res) => {
     const user = await User.findOne({ where: { ID } });
     if (user) {
       user.link = link;
+      user.isEnt = true;
       await user.save();
       res.status(200).json({ link: user.link });
     } else {
@@ -40,8 +40,9 @@ app.get('/login', async (req, res) => {
     const { ID } = req.query;
     const user = await User.findOne({ where: { ID } });
     if (user) {
-      const login = await Login.create({ userId: user.id, isEnt: !!user.link });
-      res.status(200).json({ ID: user.ID, isEnt: !!user.link, Timestamp: login.timestamp });
+      user.lastLoginTimestamp = new Date();
+      await user.save();
+      res.status(200).json({ ID: user.ID, isEnt: user.isEnt, Timestamp: user.lastLoginTimestamp });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
