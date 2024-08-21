@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scan QR Code or Enter ID</title>
+  <script src="https://unpkg.com/qr-scanner/qr-scanner.umd.min.js"></script>
+</head>
+<body>
+  <h1>Scan QR Code or Enter ID</h1>
+
+  <!-- Video element for QR code scanning -->
+  <video id="qr-video" style="width:300px; height:200px;"></video>
+
+  <!-- Form for QR code result submission -->
+  <form id="scan-form" action="/scan" method="POST">
+    <input type="hidden" id="qr-id" name="id">
+  </form>
+
+  <!-- Manual ID input form -->
+  <form id="manual-form" action="/scan" method="POST">
+    <input type="text" id="manual-id" name="id" placeholder="Enter ID manually" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const videoElem = document.getElementById('qr-video');
+    const scanFormElem = document.getElementById('scan-form');
+    const idInput = document.getElementById('qr-id');
+    const manualFormElem = document.getElementById('manual-form');
+    const manualIdInput = document.getElementById('manual-id');
+
+    // Check if an ID is already stored in localStorage
+    if (localStorage.getItem('userId')) {
+      idInput.value = localStorage.getItem('userId');
+      manualIdInput.value = localStorage.getItem('userId');
+    }
+
+    // QR code scanning
+    QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner/qr-scanner-worker.min.js';
+    const qrScanner = new QrScanner(videoElem, result => {
+      idInput.value = result;
+      localStorage.setItem('userId', result); // Save ID to localStorage
+      scanFormElem.submit();
+    });
+
+    qrScanner.start();
+
+    // Manual ID input
+    manualFormElem.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const id = manualIdInput.value;
+      localStorage.setItem('userId', id); // Save ID to localStorage
+      idInput.value = id;
+      scanFormElem.submit();
+    });
+  </script>
+</body>
+</html>

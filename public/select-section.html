@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Section</title>
+</head>
+<body>
+  <h1>Select a Section</h1>
+  <form action="/move" method="POST">
+    <input type="hidden" id="id-input" name="id">
+    <button type="submit" name="section" value="A">Section A</button>
+    <button type="submit" name="section" value="B">Section B</button>
+    <button type="submit" name="section" value="C">Section C</button>
+    <button type="submit" name="section" value="D">Section D</button>
+  </form>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Retrieve the ID from localStorage
+      const id = localStorage.getItem('userId');
+      if (id) {
+        document.getElementById('id-input').value = id;
+      } else {
+        // Handle the case where there is no ID in localStorage
+        alert("No ID found. Please scan a QR code or enter an ID.");
+        window.location.href = '/';
+      }
+    });
+  </script>
+</body>
+</html>
